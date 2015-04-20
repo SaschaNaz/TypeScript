@@ -25,7 +25,7 @@ module ts.formatting {
                 precedingToken.kind === SyntaxKind.TemplateHead ||
                 precedingToken.kind === SyntaxKind.TemplateMiddle ||
                 precedingToken.kind === SyntaxKind.TemplateTail;
-            if (precedingTokenIsLiteral && precedingToken.getStart(sourceFile) <= position &&  precedingToken.end > position) {
+            if (precedingTokenIsLiteral && precedingToken.getStart(sourceFile) <= position && precedingToken.end > position) {
                 return 0;
             }
 
@@ -116,6 +116,12 @@ module ts.formatting {
                     childStartsOnTheSameLineWithElseInIfStatement(parent, current, currentStart.line, sourceFile);
 
                 if (useActualIndentation) {
+                    // check if current node is a block-form item - if yes, take indentation from it
+                    let blockStartColumn: number = getBlockFormStartColumn(current, sourceFile, options);
+                    if (blockStartColumn !== Value.Unknown) {
+                        return blockStartColumn + indentationDelta;
+                    }
+
                     // try to fetch actual indentation for current node from source text
                     let actualIndentation = getActualIndentationForNode(current, parent, currentStart, parentAndChildShareLine, sourceFile, options);
                     if (actualIndentation !== Value.Unknown) {
@@ -215,7 +221,7 @@ module ts.formatting {
         function getStartLineAndCharacterForNode(n: Node, sourceFile: SourceFile): LineAndCharacter {
             return sourceFile.getLineAndCharacterOfPosition(n.getStart(sourceFile));
         }
-        
+
         export function childStartsOnTheSameLineWithElseInIfStatement(parent: Node, child: TextRangeWithKind, childStartLine: number, sourceFile: SourceFile): boolean {
             if (parent.kind === SyntaxKind.IfStatement && (<IfStatement>parent).elseStatement === child) {
                 let elseKeyword = findChildOfKind(parent, SyntaxKind.ElseKeyword, sourceFile);
@@ -274,6 +280,18 @@ module ts.formatting {
                 }
             }
             return undefined;
+        }
+
+        function getBlockFormStartColumn(node: Node, sourceFile: SourceFile, options: EditorOptions): number {
+            if (node.kind !== SyntaxKind.ArrowFunction &&
+                node.kind !== SyntaxKind.FunctionExpression &&
+                node.kind !== SyntaxKind.ArrayLiteralExpression) {
+                return Value.Unknown;
+            }
+
+            let open = node.getChildAt(0)
+            let lineAndCharacter = getStartLineAndCharacterForNode(open, sourceFile);
+            return findColumnForFirstNonWhitespaceCharacterInLine(lineAndCharacter, sourceFile, options);
         }
 
         function getActualIndentationForListItem(node: Node, sourceFile: SourceFile, options: EditorOptions): number {

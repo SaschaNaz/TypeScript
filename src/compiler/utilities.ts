@@ -210,6 +210,17 @@ module ts {
         return (getCombinedNodeFlags(declaration) & NodeFlags.BlockScoped) !== 0 ||
             isCatchClauseVariableDeclaration(declaration);
     }
+    
+    export function isPassableBlockForm(kind: SyntaxKind): boolean {
+        switch (kind) {
+            case SyntaxKind.ArrowFunction:
+            case SyntaxKind.FunctionExpression:
+            case SyntaxKind.ArrayLiteralExpression:
+            case SyntaxKind.ObjectLiteralExpression:
+                return true;
+        }
+        return false;
+    }
 
     // Gets the nearest enclosing block scope container that has the provided node 
     // as a descendant, that is not the provided node.

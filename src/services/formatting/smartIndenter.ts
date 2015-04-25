@@ -118,9 +118,8 @@ module ts.formatting {
 
                 if (useActualIndentation) {
                     // check if current node is a block-form item - if yes, take indentation from it
-                    let blockStartColumn: number = getBlockFormStartColumn(current, sourceFile, options);
-                    if (blockStartColumn !== Value.Unknown) {
-                        return blockStartColumn + indentationDelta;
+                    if (isPassableBlockForm(current.kind)) {
+                        return getStartColumnForPassableBlockForm(current, sourceFile, options) + indentationDelta;
                     }
 
                     // try to fetch actual indentation for current node from source text
@@ -283,13 +282,7 @@ module ts.formatting {
             return undefined;
         }
 
-        function getBlockFormStartColumn(node: Node, sourceFile: SourceFile, options: EditorOptions): number {
-            if (node.kind !== SyntaxKind.ArrowFunction &&
-                node.kind !== SyntaxKind.FunctionExpression &&
-                node.kind !== SyntaxKind.ArrayLiteralExpression) {
-                return Value.Unknown;
-            }
-
+        export function getStartColumnForPassableBlockForm(node: Node, sourceFile: SourceFile, options: EditorOptions): number {
             let open = node.getChildAt(0)
             let lineAndCharacter = getStartLineAndCharacterForNode(open, sourceFile);
             return findColumnForFirstNonWhitespaceCharacterInLine(lineAndCharacter, sourceFile, options);

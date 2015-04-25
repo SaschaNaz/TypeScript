@@ -416,7 +416,9 @@ module ts.formatting {
                 // if node is located on the same line with the parent
                 // - inherit indentation from the parent
                 // - push children if either parent of node itself has non-zero delta
-                indentation = parentDynamicIndentation.getIndentation();
+                if (!isPassableBlockForm(node.kind)) {
+                    indentation = parentDynamicIndentation.getIndentation();
+                }
                 delta = Math.min(options.IndentSize, parentDynamicIndentation.getDelta() + delta);
             }
             return {
@@ -569,10 +571,15 @@ module ts.formatting {
                 let childIndentationAmount = Constants.Unknown;
                 if (isListItem) {
                     childIndentationAmount = tryComputeIndentationForListItem(childStartPos, child.end, parentStartLine, originalRange, inheritedIndentation);
-                    if (childIndentationAmount !== Constants.Unknown) {
-                        inheritedIndentation = childIndentationAmount;
-                    }
                 }
+                // if child is passable block form - try to get its indentation
+                if (isPassableBlockForm(child.kind)) {
+                    childIndentationAmount = SmartIndenter.getStartColumnForPassableBlockForm(child, sourceFile, options);
+                }
+                if (childIndentationAmount !== Constants.Unknown) {
+                    inheritedIndentation = childIndentationAmount;
+                }
+
 
                 // child node is outside the target range - do not dive inside
                 if (!rangeOverlapsWithStartEnd(originalRange, child.pos, child.end)) {

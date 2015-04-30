@@ -573,7 +573,7 @@ module ts.formatting {
                     childIndentationAmount = tryComputeIndentationForListItem(childStartPos, child.end, parentStartLine, originalRange, inheritedIndentation);
                 }
                 // if child is passable block form - try to get its indentation
-                if (isPassableBlockForm(child.kind)) {
+                if (isPassableBlockForm(child.kind) && parent.kind !== SyntaxKind.ExpressionStatement) {
                     childIndentationAmount = SmartIndenter.getStartColumnForPassableBlockForm(child, sourceFile, options);
                 }
                 if (childIndentationAmount !== Constants.Unknown) {

@@ -2991,7 +2991,8 @@ module ts {
                         case SyntaxKind.OpenBracketToken:
                             return containingNodeKind === SyntaxKind.ArrayLiteralExpression;                 // [ |
 
-                        case SyntaxKind.ModuleKeyword:                               // module | 
+                        case SyntaxKind.ModuleKeyword:                               // module |
+                        case SyntaxKind.NamespaceKeyword:                            // namespace |
                             return true;
 
                         case SyntaxKind.DotToken:
@@ -3644,7 +3645,9 @@ module ts {
             }
             if (symbolFlags & SymbolFlags.Module) {
                 addNewLineIfDisplayPartsExist();
-                displayParts.push(keywordPart(SyntaxKind.ModuleKeyword));
+                let declaration = <ModuleDeclaration>getDeclarationOfKind(symbol, SyntaxKind.ModuleDeclaration);
+                let isNamespace = declaration && declaration.name && declaration.name.kind === SyntaxKind.Identifier;
+                displayParts.push(keywordPart(isNamespace ? SyntaxKind.NamespaceKeyword : SyntaxKind.ModuleKeyword));
                 displayParts.push(spacePart());
                 addFullSymbolName(symbol);
             }
@@ -5370,7 +5373,7 @@ module ts {
                 }
                 return;
 
-                function getPropertySymbolFromTypeReference(typeReference: HeritageClauseElement) {
+                function getPropertySymbolFromTypeReference(typeReference: ExpressionWithTypeArguments) {
                     if (typeReference) {
                         let type = typeChecker.getTypeAtLocation(typeReference);
                         if (type) {
@@ -5631,7 +5634,7 @@ module ts {
                 node = node.parent;
             }
 
-            return node.parent.kind === SyntaxKind.TypeReference || node.parent.kind === SyntaxKind.HeritageClauseElement;
+            return node.parent.kind === SyntaxKind.TypeReference || node.parent.kind === SyntaxKind.ExpressionWithTypeArguments;
         }
 
         function isNamespaceReference(node: Node): boolean {
@@ -5649,7 +5652,7 @@ module ts {
                 isLastClause = (<PropertyAccessExpression>root).name === node;
             }
 
-            if (!isLastClause && root.parent.kind === SyntaxKind.HeritageClauseElement && root.parent.parent.kind === SyntaxKind.HeritageClause) {
+            if (!isLastClause && root.parent.kind === SyntaxKind.ExpressionWithTypeArguments && root.parent.parent.kind === SyntaxKind.HeritageClause) {
                 let decl = root.parent.parent.parent;
                 return (decl.kind === SyntaxKind.ClassDeclaration && (<HeritageClause>root.parent.parent).token === SyntaxKind.ImplementsKeyword) ||
                     (decl.kind === SyntaxKind.InterfaceDeclaration && (<HeritageClause>root.parent.parent).token === SyntaxKind.ExtendsKeyword);

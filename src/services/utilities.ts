@@ -498,6 +498,28 @@ module ts {
         }
         return true;
     }
+    
+    export function isPassableBlockForm(kind: SyntaxKind): boolean {
+        switch (kind) {
+            case SyntaxKind.ArrowFunction:
+            case SyntaxKind.FunctionExpression:
+            case SyntaxKind.ArrayLiteralExpression:
+            case SyntaxKind.ObjectLiteralExpression:
+                return true;
+        }
+        return false;
+    }
+
+    export function isCallExpressionInNewLine(node: Node, effectiveStartLine: number, sourceFile: SourceFile): boolean {
+        if (node && node.parent &&
+            node.kind === SyntaxKind.CallExpression) {
+
+            let expressionStart = sourceFile.getLineAndCharacterOfPosition((<CallExpression>node).expression.getStart(sourceFile));
+
+            return (expressionStart.line !== effectiveStartLine);
+        }
+        return false;
+    }
 }
 
 // Display-part writer helpers

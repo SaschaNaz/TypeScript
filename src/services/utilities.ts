@@ -514,9 +514,14 @@ module ts {
         if (node && node.parent &&
             node.kind === SyntaxKind.CallExpression) {
 
-            let expressionStart = sourceFile.getLineAndCharacterOfPosition((<CallExpression>node).expression.getStart(sourceFile));
+            let leftHandSide: ExpressionStatement | LeftHandSideExpression = (<CallExpression>node).expression;
+            
+            if (!(<ExpressionStatement>leftHandSide).expression)
+                return false;
 
-            return (expressionStart.line !== effectiveStartLine);
+            let ascendantExpressionEnd = sourceFile.getLineAndCharacterOfPosition((<ExpressionStatement>leftHandSide).expression.end);
+
+            return (ascendantExpressionEnd.line !== effectiveStartLine);
         }
         return false;
     }

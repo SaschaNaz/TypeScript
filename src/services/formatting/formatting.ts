@@ -323,6 +323,9 @@ module ts.formatting {
         let previousParent: Node;
         let previousRangeStartLine: number;
 
+        let lastIndentedLine: number;
+        let indentationOnLastIndentedLine: number;
+        
         let edits: TextChange[] = [];
 
         formattingScanner.advance();
@@ -416,9 +419,10 @@ module ts.formatting {
                 // if node is located on the same line with the parent
                 // - inherit indentation from the parent
                 // - push children if either parent of node itself has non-zero delta
-                if (!isPassableBlockForm(node.kind) || !isCallExpressionInNewLine(parent, effectiveParentStartLine, sourceFile)) {
-                    indentation = parentDynamicIndentation.getIndentation();
-                }
+				
+                indentation = startLine === lastIndentedLine 
+                    ? indentationOnLastIndentedLine 
+                    : parentDynamicIndentation.getIndentation();
                 delta = Math.min(options.IndentSize, parentDynamicIndentation.getDelta() + delta);
             }
             return {
@@ -719,7 +723,6 @@ module ts.formatting {
                                 continue;
                             }
 
-                            let triviaStartLine = sourceFile.getLineAndCharacterOfPosition(triviaItem.pos).line;
                             switch (triviaItem.kind) {
                                 case SyntaxKind.MultiLineCommentTrivia:
                                     let commentIndentation = dynamicIndentation.getIndentationForComment(currentTokenInfo.token.kind);
@@ -744,6 +747,9 @@ module ts.formatting {
                     if (isTokenInRange && !rangeContainsError(currentTokenInfo.token)) {
                         let tokenIndentation = dynamicIndentation.getIndentationForToken(tokenStart.line, currentTokenInfo.token.kind);
                         insertIndentation(currentTokenInfo.token.pos, tokenIndentation, lineAdded);
+                        
+                        lastIndentedLine = tokenStart.line;
+                        indentationOnLastIndentedLine = tokenIndentation;
                     }
                 }
 

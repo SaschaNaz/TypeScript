@@ -4,7 +4,7 @@
 ////    .resolve()
 ////    .then(() => {/*1*/""/*2*/
 ////}).then(() => {/*3*//*4*/
-////})/*semi1*/ /*semi2*/
+////})/*semi1*//*semi2*/
 
 ////function foo() {
 ////    return Promise.resolve()
@@ -24,7 +24,7 @@ verify.currentLineContentIs('    }).then(() => {');
 
 goTo.marker("semi1");
 edit.insert(';');
-verify.currentLineContentIs('    }); ');
+verify.currentLineContentIs('    });');
 goTo.marker("semi2");
 edit.insert(';');
 verify.currentLineContentIs('    });;');

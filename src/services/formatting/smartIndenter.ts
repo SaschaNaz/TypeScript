@@ -86,7 +86,7 @@ namespace ts.formatting {
                 if (actualIndentation !== Value.Unknown) {
                     return actualIndentation;
                 }
-                actualIndentation = getLineIndentationWhenExpressionIsInMultiLine(current, sourceFile, options);
+                actualIndentation = getLineIndentationForMultiLineParentExpression(current, sourceFile, options);
                 if (actualIndentation !== Value.Unknown) {
                     return actualIndentation + options.IndentSize;
                 }
@@ -146,15 +146,18 @@ namespace ts.formatting {
                     if (actualIndentation !== Value.Unknown) {
                         return actualIndentation + indentationDelta;
                     }
-                    actualIndentation = getLineIndentationWhenExpressionIsInMultiLine(current, sourceFile, options);
-                    if (actualIndentation !== Value.Unknown) {
-                        return actualIndentation + indentationDelta;
-                    }
                 }
 
                 // increase indentation if parent node wants its content to be indented and parent and child nodes don't start on the same line
                 if (shouldIndentChildNode(parent, current) && !parentAndChildShareLine) {
                     indentationDelta += options.IndentSize;
+                }
+
+                if (useActualIndentation) {
+                    let actualIndentation = getLineIndentationForMultiLineParentExpression(current, sourceFile, options);
+                    if (actualIndentation !== Value.Unknown) {
+                        return actualIndentation + indentationDelta;
+                    }
                 }
 
                 current = parent;
@@ -315,7 +318,7 @@ namespace ts.formatting {
             }
         }
 
-        function getLineIndentationWhenExpressionIsInMultiLine(node: Node, sourceFile: SourceFile, options: EditorOptions): number {
+        function getLineIndentationForMultiLineParentExpression(node: Node, sourceFile: SourceFile, options: EditorOptions): number {
             // actual indentation should not be used when:
             // - node is close parenthesis - this is the end of the expression
             if (node.kind === SyntaxKind.CloseParenToken) {
@@ -327,14 +330,14 @@ namespace ts.formatting {
                 node.parent.kind === SyntaxKind.NewExpression) &&
                 (<CallExpression>node.parent).expression !== node) {
 
-                let fullCallOrNewExpression = (<CallExpression | NewExpression>node.parent).expression;
-                let startingExpression = getStartingExpression(<PropertyAccessExpression | CallExpression | ElementAccessExpression>fullCallOrNewExpression);
+                let highestComponentExpression = (<CallExpression | NewExpression>node.parent).expression;
+                let startingExpression = getStartingExpression(<PropertyAccessExpression | CallExpression | ElementAccessExpression>highestComponentExpression);
 
-                if (fullCallOrNewExpression === startingExpression) {
+                if (highestComponentExpression === startingExpression) {
                     return Value.Unknown;
                 }
 
-                let fullCallOrNewExpressionEnd = sourceFile.getLineAndCharacterOfPosition(fullCallOrNewExpression.end);
+                let fullCallOrNewExpressionEnd = sourceFile.getLineAndCharacterOfPosition(highestComponentExpression.end);
                 let startingExpressionEnd = sourceFile.getLineAndCharacterOfPosition(startingExpression.end);
 
                 if (fullCallOrNewExpressionEnd.line === startingExpressionEnd.line) {

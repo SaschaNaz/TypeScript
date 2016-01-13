@@ -20,6 +20,13 @@
 ////    /*n2*/
 ////    .then();
 
+////Promise.all([
+////]).join(
+////    [
+////    /*chainedJoinArrayIndent*/
+////    ]
+////    )/*chainedJoinDanglingCloseParen*/
+
 
 goTo.marker('1');
 edit.insertLine('');
@@ -50,3 +57,9 @@ goTo.marker('n1');
 verify.indentationIs(8);
 goTo.marker('n2');
 verify.indentationIs(4);
+
+goTo.marker("chainedJoinArrayIndent");
+verify.indentationIs(8);
+goTo.marker("chainedJoinDanglingCloseParen");
+// TODO: verify.currentLineContentIs(")");
+verify.currentLineContentIs("    )");

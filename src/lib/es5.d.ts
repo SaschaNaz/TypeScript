@@ -75,9 +75,6 @@ declare function escape(string: string): string;
 declare function unescape(string: string): string;
 
 interface Symbol {
-  /** Returns a string representation of an object. */
-  toString(): string;
-
   /** Returns the primitive value of the specified object. */
   valueOf(): symbol;
 }
@@ -272,9 +269,6 @@ interface Function {
       */
     bind(this: Function, thisArg: any, ...argArray: any[]): any;
 
-    /** Returns a string representation of a function. */
-    toString(): string;
-
     prototype: any;
     readonly length: number;
 
@@ -362,9 +356,6 @@ interface IArguments {
 }
 
 interface String {
-    /** Returns a string representation of a string. */
-    toString(): string;
-
     /**
       * Returns the character at the specified index.
       * @param pos The zero-based index of the desired character.
@@ -697,8 +688,6 @@ declare const Math: Math;
 
 /** Enables basic storage and retrieval of dates and times. */
 interface Date {
-    /** Returns a string representation of a date. The format of the string depends on the locale. */
-    toString(): string;
     /** Returns a date as a string value. */
     toDateString(): string;
     /** Returns a time as a string value. */
@@ -1059,10 +1048,6 @@ interface ReadonlyArray<T> {
       */
     readonly length: number;
     /**
-      * Returns a string representation of an array.
-      */
-    toString(): string;
-    /**
       * Returns a string representation of an array. The elements are converted to string using their toLocalString methods.
       */
     toLocaleString(): string;
@@ -1177,10 +1162,6 @@ interface Array<T> {
       * Gets or sets the length of the array. This is a number one higher than the highest element defined in an array.
       */
     length: number;
-    /**
-      * Returns a string representation of an array.
-      */
-    toString(): string;
     /**
       * Returns a string representation of an array. The elements are converted to string using their toLocalString methods.
       */
@@ -1879,11 +1860,6 @@ interface Int8Array {
       */
     toLocaleString(): string;
 
-    /**
-      * Returns a string representation of an array.
-      */
-    toString(): string;
-
     [index: number]: number;
 }
 interface Int8ArrayConstructor {
@@ -2147,11 +2123,6 @@ interface Uint8Array {
       * Converts a number to a string by using the current locale.
       */
     toLocaleString(): string;
-
-    /**
-      * Returns a string representation of an array.
-      */
-    toString(): string;
 
     [index: number]: number;
 }
@@ -2417,11 +2388,6 @@ interface Uint8ClampedArray {
       */
     toLocaleString(): string;
 
-    /**
-      * Returns a string representation of an array.
-      */
-    toString(): string;
-
     [index: number]: number;
 }
 
@@ -2683,11 +2649,6 @@ interface Int16Array {
       * Converts a number to a string by using the current locale.
       */
     toLocaleString(): string;
-
-    /**
-      * Returns a string representation of an array.
-      */
-    toString(): string;
 
     [index: number]: number;
 }
@@ -2954,11 +2915,6 @@ interface Uint16Array {
       */
     toLocaleString(): string;
 
-    /**
-      * Returns a string representation of an array.
-      */
-    toString(): string;
-
     [index: number]: number;
 }
 
@@ -3223,11 +3179,6 @@ interface Int32Array {
       */
     toLocaleString(): string;
 
-    /**
-      * Returns a string representation of an array.
-      */
-    toString(): string;
-
     [index: number]: number;
 }
 
@@ -3490,11 +3441,6 @@ interface Uint32Array {
       * Converts a number to a string by using the current locale.
       */
     toLocaleString(): string;
-
-    /**
-      * Returns a string representation of an array.
-      */
-    toString(): string;
 
     [index: number]: number;
 }
@@ -3760,11 +3706,6 @@ interface Float32Array {
       */
     toLocaleString(): string;
 
-    /**
-      * Returns a string representation of an array.
-      */
-    toString(): string;
-
     [index: number]: number;
 }
 
@@ -4029,11 +3970,6 @@ interface Float64Array {
       * Converts a number to a string by using the current locale.
       */
     toLocaleString(): string;
-
-    /**
-      * Returns a string representation of an array.
-      */
-    toString(): string;
 
     [index: number]: number;
 }

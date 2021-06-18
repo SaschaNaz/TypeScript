@@ -6103,6 +6103,7 @@ namespace ts {
         //       module kind).
         ES2015 = 5,
         ES2020 = 6,
+        ES2022 = 7,
         ESNext = 99
     }
 
